@@ -16,5 +16,3 @@ set_target_properties(ldd_tsclib PROPERTIES
 
 target_compile_definitions(ldd_tsclib PUBLIC DART_SHARED_LIB)
 
-
-set(ldd_tsclib_bundled_libraries "${CMAKE_CURRENT_SOURCE_DIR}/TSCLIB.dll" PARENT_SCOPE)

@@ -6,6 +6,8 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  ldd_printers
+  ldd_tools
   ldd_tsclib
 )
 

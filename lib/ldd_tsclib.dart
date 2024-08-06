@@ -1,36 +1,236 @@
-
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:isolate';
+import 'package:ffi/ffi.dart' as ffi;
 
 import 'ldd_tsclib_bindings_generated.dart';
 
-/// A very short-lived native function.
-///
-/// For very short-lived functions, it is fine to call them on the main isolate.
-/// They will block the Dart execution while running the native function, so
-/// only do this for native functions which are guaranteed to be short-lived.
-int sum(int a, int b) => _bindings.sum(a, b);
+final DynamicLibrary _tsclib = DynamicLibrary.open("TSCLIB.dll");
 
-/// A longer lived native function, which occupies the thread calling it.
-///
-/// Do not call these kind of native functions in the main isolate. They will
-/// block Dart execution. This will cause dropped frames in Flutter applications.
-/// Instead, call these native functions on a separate isolate.
-///
-/// Modify this to suit your own use case. Example use cases:
-///
-/// 1. Reuse a single isolate for various different kinds of requests.
-/// 2. Use multiple helper isolates for parallel execution.
-Future<int> sumAsync(int a, int b) async {
-  final SendPort helperIsolateSendPort = await _helperIsolateSendPort;
-  final int requestId = _nextSumRequestId++;
-  final _SumRequest request = _SumRequest(requestId, a, b);
-  final Completer<int> completer = Completer<int>();
-  _sumRequests[requestId] = completer;
-  helperIsolateSendPort.send(request);
-  return completer.future;
+typedef ABOUT_NA = Void Function();
+typedef ABOUT = void Function();
+
+///关于dll
+void about() {
+  final fun = _tsclib.lookupFunction<ABOUT_NA, ABOUT>("about");
+  fun();
+}
+
+typedef OPEN_PORT_NA = Void Function(Pointer<ffi.Utf8> str);
+typedef OPEN_PORT = void Function(Pointer<ffi.Utf8> str);
+
+///打开打印机
+void openport(String printer) {
+  final fun = _tsclib.lookupFunction<OPEN_PORT_NA, OPEN_PORT>("openport");
+  fun.call(printer.toNativeUtf8());
+}
+
+///closeport
+typedef CLOSE_PORT_NA = Void Function();
+typedef CLOSE_PORT = void Function();
+
+///关闭
+void closeport() {
+  final fun = _tsclib.lookupFunction<CLOSE_PORT_NA, CLOSE_PORT>("closeport");
+  fun();
+}
+
+///setup
+typedef SETUP_NA = Void Function(
+    Pointer<ffi.Utf8> a,
+    Pointer<ffi.Utf8> b,
+    Pointer<ffi.Utf8> c,
+    Pointer<ffi.Utf8> d,
+    Pointer<ffi.Utf8> e,
+    Pointer<ffi.Utf8> f,
+    Pointer<ffi.Utf8> g);
+typedef SETUP = void Function(
+    Pointer<ffi.Utf8> a,
+    Pointer<ffi.Utf8> b,
+    Pointer<ffi.Utf8> c,
+    Pointer<ffi.Utf8> d,
+    Pointer<ffi.Utf8> e,
+    Pointer<ffi.Utf8> f,
+    Pointer<ffi.Utf8> g);
+void setup(
+    {required String a,
+    required String b,
+    required String c,
+    required String d,
+    required String e,
+    required String f,
+    required String g}) {
+  final fun = _tsclib.lookupFunction<SETUP_NA, SETUP>("setup");
+  fun.call(a.toNativeUtf8(), b.toNativeUtf8(), c.toNativeUtf8(),
+      d.toNativeUtf8(), e.toNativeUtf8(), f.toNativeUtf8(), g.toNativeUtf8());
+}
+
+///clearbuffer
+typedef CLEAR_BUFFER_NA = Void Function();
+typedef CLEAR_BUFFER = void Function();
+
+void clearBuffer() {
+  final fun =
+      _tsclib.lookupFunction<CLEAR_BUFFER_NA, CLEAR_BUFFER>('clearbuffer');
+  fun();
+}
+
+///barcode
+typedef BARCODE_NA = Void Function(
+    Pointer<ffi.Utf8> a,
+    Pointer<ffi.Utf8> b,
+    Pointer<ffi.Utf8> c,
+    Pointer<ffi.Utf8> d,
+    Pointer<ffi.Utf8> e,
+    Pointer<ffi.Utf8> f,
+    Pointer<ffi.Utf8> g,
+    Pointer<ffi.Utf8> h,
+    Pointer<ffi.Utf8> l);
+typedef BARCODE = void Function(
+    Pointer<ffi.Utf8> a,
+    Pointer<ffi.Utf8> b,
+    Pointer<ffi.Utf8> c,
+    Pointer<ffi.Utf8> d,
+    Pointer<ffi.Utf8> e,
+    Pointer<ffi.Utf8> f,
+    Pointer<ffi.Utf8> g,
+    Pointer<ffi.Utf8> h,
+    Pointer<ffi.Utf8> l);
+
+void barcode(
+    {required String a,
+    required String b,
+    required String c,
+    required String d,
+    required String e,
+    required String f,
+    required String g,
+    required String h,
+    required String l}) {
+  final fun = _tsclib.lookupFunction<BARCODE_NA, BARCODE>("barcode");
+  fun.call(
+      a.toNativeUtf8(),
+      b.toNativeUtf8(),
+      c.toNativeUtf8(),
+      d.toNativeUtf8(),
+      e.toNativeUtf8(),
+      f.toNativeUtf8(),
+      g.toNativeUtf8(),
+      h.toNativeUtf8(),
+      l.toNativeUtf8());
+}
+
+///printlabel
+
+typedef PRINT_LABEL_NA = Void Function(
+  Pointer<ffi.Utf8> a,
+  Pointer<ffi.Utf8> b,
+);
+typedef PRINT_LABEL = void Function(
+  Pointer<ffi.Utf8> a,
+  Pointer<ffi.Utf8> b,
+);
+
+void printLabel(String a, String b) {
+  final fun = _tsclib.lookupFunction<PRINT_LABEL_NA, PRINT_LABEL>("printlabel");
+  fun(a.toNativeUtf8(), b.toNativeUtf8());
+}
+
+///sendcommand
+typedef SEND_COMMAND_NA = Void Function(Pointer<ffi.Utf8> command);
+typedef SEND_COMMAND = void Function(Pointer<ffi.Utf8> command);
+//发送自定义命令
+void sendCommand(String command) {
+  final fun =
+      _tsclib.lookupFunction<SEND_COMMAND_NA, SEND_COMMAND>("sendcommand");
+  fun(command.toNativeUtf8());
+}
+
+///downloadpcx
+typedef DOWNLOAD_PCX_NA = Void Function(
+  Pointer<ffi.Utf8> a,
+  Pointer<ffi.Utf8> b,
+);
+typedef DOWNLOAD_PCX = void Function(
+  Pointer<ffi.Utf8> a,
+  Pointer<ffi.Utf8> b,
+);
+
+///打印图片
+void downloadPcx({required String filepath, required String filename}) {
+  final fun =
+      _tsclib.lookupFunction<DOWNLOAD_PCX_NA, DOWNLOAD_PCX>("downloadpcx");
+  fun(filepath.toNativeUtf8(), filename.toNativeUtf8());
+}
+
+/// nobackfeed
+typedef NOBACK_FEED_NA = Void Function();
+typedef NOBACK_FEED = void Function();
+
+void nobackfeed() {
+  final fun = _tsclib.lookupFunction<NOBACK_FEED_NA, NOBACK_FEED>("nobackfeed");
+  fun();
+}
+
+/// formfeed
+void formfeed() {
+  final fun = _tsclib.lookupFunction<NOBACK_FEED_NA, NOBACK_FEED>("formfeed");
+  fun();
+}
+
+///printerfont
+void printerfont(
+    {required String a,
+    required String b,
+    required String c,
+    required String d,
+    required String e,
+    required String f,
+    required String g}) {
+  final fun = _tsclib.lookupFunction<SETUP_NA, SETUP>("printerfont");
+  fun.call(a.toNativeUtf8(), b.toNativeUtf8(), c.toNativeUtf8(),
+      d.toNativeUtf8(), e.toNativeUtf8(), f.toNativeUtf8(), g.toNativeUtf8());
+}
+
+///windowsfont
+typedef WINFONT_NA = Void Function(
+    Pointer<ffi.Utf8> a,
+    Pointer<ffi.Utf8> b,
+    Pointer<ffi.Utf8> c,
+    Pointer<ffi.Utf8> d,
+    Pointer<ffi.Utf8> e,
+    Pointer<ffi.Utf8> f,
+    Pointer<ffi.Utf8> g,
+    Pointer<ffi.Utf8> h);
+typedef WINFONT = void Function(
+    Pointer<ffi.Utf8> a,
+    Pointer<ffi.Utf8> b,
+    Pointer<ffi.Utf8> c,
+    Pointer<ffi.Utf8> d,
+    Pointer<ffi.Utf8> e,
+    Pointer<ffi.Utf8> f,
+    Pointer<ffi.Utf8> g,
+    Pointer<ffi.Utf8> h);
+
+void windowsfont(
+    {required String a,
+    required String b,
+    required String c,
+    required String d,
+    required String e,
+    required String f,
+    required String g,
+    required String h}) {
+  final fun = _tsclib.lookupFunction<WINFONT_NA, WINFONT>("windowsfont");
+  fun.call(
+      a.toNativeUtf8(),
+      b.toNativeUtf8(),
+      c.toNativeUtf8(),
+      d.toNativeUtf8(),
+      e.toNativeUtf8(),
+      f.toNativeUtf8(),
+      g.toNativeUtf8(),
+      h.toNativeUtf8());
 }
 
 const String _libName = 'ldd_tsclib';
@@ -51,81 +251,3 @@ final DynamicLibrary _dylib = () {
 
 /// The bindings to the native functions in [_dylib].
 final LddTsclibBindings _bindings = LddTsclibBindings(_dylib);
-
-
-/// A request to compute `sum`.
-///
-/// Typically sent from one isolate to another.
-class _SumRequest {
-  final int id;
-  final int a;
-  final int b;
-
-  const _SumRequest(this.id, this.a, this.b);
-}
-
-/// A response with the result of `sum`.
-///
-/// Typically sent from one isolate to another.
-class _SumResponse {
-  final int id;
-  final int result;
-
-  const _SumResponse(this.id, this.result);
-}
-
-/// Counter to identify [_SumRequest]s and [_SumResponse]s.
-int _nextSumRequestId = 0;
-
-/// Mapping from [_SumRequest] `id`s to the completers corresponding to the correct future of the pending request.
-final Map<int, Completer<int>> _sumRequests = <int, Completer<int>>{};
-
-/// The SendPort belonging to the helper isolate.
-Future<SendPort> _helperIsolateSendPort = () async {
-  // The helper isolate is going to send us back a SendPort, which we want to
-  // wait for.
-  final Completer<SendPort> completer = Completer<SendPort>();
-
-  // Receive port on the main isolate to receive messages from the helper.
-  // We receive two types of messages:
-  // 1. A port to send messages on.
-  // 2. Responses to requests we sent.
-  final ReceivePort receivePort = ReceivePort()
-    ..listen((dynamic data) {
-      if (data is SendPort) {
-        // The helper isolate sent us the port on which we can sent it requests.
-        completer.complete(data);
-        return;
-      }
-      if (data is _SumResponse) {
-        // The helper isolate sent us a response to a request we sent.
-        final Completer<int> completer = _sumRequests[data.id]!;
-        _sumRequests.remove(data.id);
-        completer.complete(data.result);
-        return;
-      }
-      throw UnsupportedError('Unsupported message type: ${data.runtimeType}');
-    });
-
-  // Start the helper isolate.
-  await Isolate.spawn((SendPort sendPort) async {
-    final ReceivePort helperReceivePort = ReceivePort()
-      ..listen((dynamic data) {
-        // On the helper isolate listen to requests and respond to them.
-        if (data is _SumRequest) {
-          final int result = _bindings.sum_long_running(data.a, data.b);
-          final _SumResponse response = _SumResponse(data.id, result);
-          sendPort.send(response);
-          return;
-        }
-        throw UnsupportedError('Unsupported message type: ${data.runtimeType}');
-      });
-
-    // Send the port to the main isolate on which we can receive requests.
-    sendPort.send(helperReceivePort.sendPort);
-  }, receivePort.sendPort);
-
-  // Wait until the helper isolate has sent us back the SendPort on which we
-  // can start sending requests.
-  return completer.future;
-}();
