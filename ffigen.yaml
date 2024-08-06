@@ -1,0 +1,19 @@
+# Run with `dart run ffigen --config ffigen.yaml`.
+name: LddTsclibBindings
+description: |
+  Bindings for `src/ldd_tsclib.h`.
+
+  Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
+output: 'lib/ldd_tsclib_bindings_generated.dart'
+headers:
+  entry-points:
+    - 'src/ldd_tsclib.h'
+  include-directives:
+    - 'src/ldd_tsclib.h'
+preamble: |
+  // ignore_for_file: always_specify_types
+  // ignore_for_file: camel_case_types
+  // ignore_for_file: non_constant_identifier_names
+comments:
+  style: any
+  length: full
