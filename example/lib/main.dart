@@ -20,6 +20,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<LddWinPrinter> list = [];
+
+  ///
   Future<void> _getAllPrinters() async {
     list = await lddGetAllPrinters();
     setState(() {});

@@ -119,7 +119,6 @@ void barcode(
       h.toNativeUtf8(),
       l.toNativeUtf8());
 }
-
 ///printlabel
 
 typedef PRINT_LABEL_NA = Void Function(

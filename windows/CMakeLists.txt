@@ -21,9 +21,8 @@ set(ldd_tsclib_bundled_libraries
   $<TARGET_FILE:ldd_tsclib>
   PARENT_SCOPE
 )
+
 set(ldd_tsclib_bundled_libraries
-# 在 ../src/CMakeLists.txt 中定义。
-  # 可以更改它以适应不同的构建。
   "${CMAKE_CURRENT_SOURCE_DIR}/TSCLIB.dll"
   PARENT_SCOPE
 )
