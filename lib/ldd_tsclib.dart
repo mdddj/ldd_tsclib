@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 
 import 'ldd_tsclib_bindings_generated.dart';
 
@@ -231,6 +232,21 @@ void windowsfont(
       g.toNativeUtf8(),
       h.toNativeUtf8());
 }
+
+
+
+typedef SendBinaryDataC = Void Function(Pointer<Uint8>, Int32);
+typedef SendBinaryDataDart = void Function(Pointer<Uint8>, int);
+void sendBinaryData(List<int> data){
+  final fun = _tsclib.lookupFunction<SendBinaryDataC,SendBinaryDataDart>("sendBinaryData");
+  final Pointer<Uint8> dataPtr = malloc<Uint8>(data.length);
+  for (int i = 0; i < data.length; i++) {
+    dataPtr[i] = data[i];
+  }
+  fun.call(dataPtr,data.length);
+  malloc.free(dataPtr);
+}
+
 
 const String _libName = 'ldd_tsclib';
 
